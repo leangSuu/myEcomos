@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Library</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+<style>
+body.admin-page {
+  background: #f5f7fb;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background: #0f172a;
+  color: white;
+  padding: 20px;
+  transition: 0.3s ease;
+  z-index: 1000;
+}
+
+.sidebar h3 {
+  font-size: 18px;
+  margin-bottom: 25px;
+}
+
+.sidebar .nav-link {
+  color: #cbd5e1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+}
+
+.sidebar .nav-link:hover {
+  background: #1e293b;
+  color: white;
+}
+
+.sidebar .nav-link.active {
+  background: #2563eb;
+  color: white;
+}
+
+/* ================= MAIN ================= */
+.main-content {
+  margin-left: 250px;
+  padding: 20px;
+  transition: 0.3s;
+}
+
+/* ================= TOPBAR ================= */
+.top-navbar {
+  background: white;
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+/* ================= MENU BUTTON ================= */
+.menu-toggle {
+  display: none;
+  font-size: 22px;
+}
+
+/* ================= BOOK CARD ================= */
+.book-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  transition: 0.3s;
+}
+
+.book-card:hover {
+  transform: translateY(-6px);
+}
+
+.book-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.book-body {
+  padding: 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.book-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 8px;
+}
+
+/* ================= OVERLAY ================= */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  z-index: 999;
+}
+
+.sidebar-overlay.active {
+  display: block;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 992px) {
+
+  .sidebar {
+    left: -260px;
+  }
+
+  .sidebar.active {
+    left: 0;
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+  }
+}
+
+</style>
+</head>
+
+<body class="admin-page">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h3>📚 Library Admin</h3>
+
+  <nav class="nav flex-column">
+    <a class="nav-link active" href="/admin/dashboard">Dashboard</a>
+    <a class="nav-link" href="/library">Library</a>
+    <a class="nav-link text-danger" href="/admin/logout">Logout</a>
+  </nav>
+</div>
+
+<!-- OVERLAY -->
+<div class="sidebar-overlay"></div>
+
+<!-- MAIN -->
+<div class="main-content">
+
+  <!-- TOPBAR -->
+  <nav class="top-navbar">
+
+    <!-- MENU -->
+    <button class="menu-toggle btn btn-light d-lg-none">
+      <i class="bi bi-list"></i>
+    </button>
+
+    <!-- SEARCH -->
+    <input type="text" class="form-control form-control-sm flex-grow-1"
+           placeholder="Search books...">
+
+    <!-- ICONS -->
+    <div class="d-flex align-items-center gap-3">
+      <i class="bi bi-bell fs-5"></i>
+      <i class="bi bi-person-circle fs-4"></i>
+    </div>
+
+  </nav>
+
+  <!-- CONTENT -->
+  <h2 class="mb-3">Dashboard</h2>
+
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="p-3 bg-white rounded-4 shadow-sm">
+        <h5>Total Books</h5>
+        <h2>{{ $totalBooks }}</h2>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOOKS -->
+  <div class="row g-4">
+
+    @forelse($books as $row)
+
+    <div class="col-md-4 col-lg-3">
+      <div class="book-card">
+
+        <img src="{{ asset('uploads/'.$row->img) }}">
+
+        <div class="book-body">
+
+          <h5>{{ $row->title }}</h5>
+          <p>{{ $row->author }}</p>
+
+          <div class="book-actions">
+            <a href="#" class="btn btn-primary btn-sm">Read</a>
+            <a href="#" class="btn btn-warning btn-sm">Manage</a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    @empty
+    <p>No books found</p>
+    @endforelse
+
+  </div>
+
+</div>
+
+<script>
+const sidebar = document.querySelector(".sidebar");
+const overlay = document.querySelector(".sidebar-overlay");
+const toggle = document.querySelector(".menu-toggle");
+
+toggle.addEventListener("click", () => {
+  sidebar.classList.toggle("active");
+  overlay.classList.toggle("active");
+});
+
+overlay.addEventListener("click", () => {
+  sidebar.classList.remove("active");
+  overlay.classList.remove("active");
+});
+</script>
+
+</body>
+</html>
